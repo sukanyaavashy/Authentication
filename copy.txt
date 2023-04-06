@@ -1,6 +1,6 @@
 import { createContext,useState,useEffect } from 'react';
 import Cookies from 'js-cookie';
-
+// import axios from 'axios'
 
 export const store = createContext();
 
@@ -8,7 +8,6 @@ export const AuthContextProvider = ({ children }) => {
   const [token, setToken] = useState(null);
   const[error,setError] = useState(false);
   const[user,setUser] = useState(null)
-  
 
   const login = async({email, password}) => {
     try{
@@ -17,11 +16,14 @@ export const AuthContextProvider = ({ children }) => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: email, password: password }),
+        credentials: 'include'
       })
       const data = await response.json()
       if (response.ok === true) {
+        console.log("kkkkkk")
         setToken(data.token)
         Cookies.set("token", data.token);
+        localStorage.setItem('token',data.token)
         setError(false)
       } else {
         console.log("noooo")
@@ -44,7 +46,7 @@ export const AuthContextProvider = ({ children }) => {
       const data = await response.json()
       if (response.ok === true) {
         setToken(data.token)
-        Cookies.set('token', data.token, { expires: 7 });
+        Cookies.set("token", data.token);
         setError(false)
         console.log("user registered successfully")
       } else {
@@ -57,41 +59,42 @@ export const AuthContextProvider = ({ children }) => {
   }
 
 const home = async() => {
+  // console.log(token)
   try {
     const response = await fetch('http://localhost:5000/home', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${Cookies.get('token')}`,
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
+      credentials: 'include'
     });
     const data = await response.json();
     if (response.ok === true) {
       setUser(data);
     } else {
-      setError(true);
       console.log('Error fetching user data');
     }
   } catch (error) {
-    setError(true);
     console.log(error);
   }
 }
 
-const logout = () => {
-  setToken(null);
-  Cookies.remove('token');  
-  setUser(null) 
-};
 
-useEffect(() => {
-  if (token) {
-    Cookies.set('token', token, { expires: 7 });
-    
-  } else {
+  const logout = () => {
+    setToken(null);
     Cookies.remove('token');
-  }
-}, []);
+    
+  };
+
+  useEffect(() => {
+    if (token) {
+      Cookies.set('token', token, { expires: 7 });
+      
+    } else {
+      Cookies.remove('token');
+    }
+  }, []);
 
   return (
     <store.Provider value={{ token,setToken, login, logout, register,error,home,user }}>
@@ -99,3 +102,58 @@ useEffect(() => {
     </store.Provider>
   );
 };
+
+
+
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+import React, { useContext,useEffect } from 'react';
+import { store } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import '../App.css'
+import Cookies from 'js-cookie';
+
+const Home = () => {
+  const {  logout,user,home } = useContext(store);
+  const navigate = useNavigate()
+  const token = localStorage.getItem('token')
+  
+ 
+  useEffect(() => {
+    if(token){
+      home()
+    }else{
+      navigate('/login');
+    }
+  }, []);
+
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
+
+  return (
+    <div className="home-container">
+    <div className='user-details-card'>
+    <h1>Welcome to the Home page!</h1>
+      {user ? (
+        <div>
+          <p>Name: {user.username}</p>
+          <p>Email: {user.email}</p>
+        </div>
+      ):
+       (
+        <p>Loading user data...</p>
+      )}
+      
+      <button className='logout-btn' onClick={handleLogout}>Logout</button>
+    </div>
+    </div>
+  );
+};
+
+export default Home;

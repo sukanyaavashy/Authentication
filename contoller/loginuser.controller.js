@@ -9,7 +9,7 @@ exports.post = async (req,res) => {
             return res.status(400).json({error:'User Not found'})
         }
         if(exist.password !== password){
-            return res.status(400).json({error:'Inavalid Credentials'})
+            return res.status(400).json({error:'Authentication failed'})
         }
         let payload = {
             user:{

@@ -14,6 +14,6 @@ router.post("/login", loginUserController.post);
 router.post("/register", registerUserController.post);
 
 //Api to the MyProfile
-router.get("/home", middleware,myProfileUserController.get);
+router.get("/home", middleware, myProfileUserController.get);
 
 module.exports = router;

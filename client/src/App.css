@@ -75,6 +75,28 @@ button {
 .tag{
   color: #0563b4;
 }
+.home-container{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100vw;
+  height: 100vh;
+}
+.user-details-card{
+  /* width: 1000px; */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.logout-btn{
+  background: #0563b4 !important;
+  border:0px;
+  width: 200px;
+  padding: 10px;
+  font-size: 16px;
+  color: #ffff;
+
+}
 
 
 
