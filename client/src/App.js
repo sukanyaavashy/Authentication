@@ -7,7 +7,6 @@ import Home from './components/Home'
 // import { store } from './context/AuthContext';
 
 function App() {
-  // const { token } = useContext(store);
   return (
     
      <AuthContextProvider>

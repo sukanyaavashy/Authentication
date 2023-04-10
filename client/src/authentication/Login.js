@@ -2,18 +2,19 @@ import React, { useState,useContext } from 'react'
 import '../App.css'
 import {store} from '../context/AuthContext'
 import { useNavigate,Link } from 'react-router-dom';
+import Cookies from 'js-cookie';
 
 const Login = () => {
   const {login, error} = useContext(store)
   const[email,setEmail] = useState('')
   const[password,setPassword] = useState('')
   const navigate = useNavigate()
-
+  const tokenCookie = Cookies.get('token');
 
   const handleSubmit = async(e) => {
     e.preventDefault()
     await login({email,password})
-    if(!error){
+    if(tokenCookie !== undefined ){
       navigate('/')
     }
 

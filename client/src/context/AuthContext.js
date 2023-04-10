@@ -1,5 +1,6 @@
 import { createContext,useState,useEffect } from 'react';
 import Cookies from 'js-cookie';
+import { TokenExpiredError } from 'jsonwebtoken';
 
 
 export const store = createContext();
@@ -21,10 +22,9 @@ export const AuthContextProvider = ({ children }) => {
       const data = await response.json()
       if (response.ok === true) {
         setToken(data.token)
-        Cookies.set("token", data.token);
+        Cookies.set("token", data.token, {expires:30});
         setError(false)
       } else {
-        console.log("noooo")
        setError(true)
       }
     }catch(err){
@@ -44,7 +44,7 @@ export const AuthContextProvider = ({ children }) => {
       const data = await response.json()
       if (response.ok === true) {
         setToken(data.token)
-        Cookies.set('token', data.token, { expires: 7 });
+        Cookies.set('token', data.token, { expires: 30 });
         setError(false)
         console.log("user registered successfully")
       } else {
@@ -86,7 +86,7 @@ const logout = () => {
 
 useEffect(() => {
   if (token) {
-    Cookies.set('token', token, { expires: 7 });
+    Cookies.set('token', token, { expires: 30 });
     
   } else {
     Cookies.remove('token');
